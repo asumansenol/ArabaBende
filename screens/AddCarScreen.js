@@ -1,11 +1,11 @@
 import React from 'react';
-import { ConfirmDialog } from 'react-native-simple-dialogs';
 import {
   PacmanIndicator,
 } from 'react-native-indicators';
 import {
   View,
   ScrollView,
+  Alert,
   StyleSheet,
   TouchableOpacity,
   Text,AsyncStorage,
@@ -28,7 +28,6 @@ export default class AddCarScreen extends React.Component {
     this.onPressDrop = this.onPressDrop.bind(this);
     this.state = {
       animating: true,
-      dialogVisible:false,
       vehicleList: [],
       value: '0',
       personId: '',
@@ -104,8 +103,7 @@ export default class AddCarScreen extends React.Component {
       .then((responseJson) => {
         this.setState({
           vehicleList: responseJson  ,
-          animating: false,
-          dialogVisible:false
+          animating: false
          
         });
       })
@@ -128,8 +126,7 @@ export default class AddCarScreen extends React.Component {
       .then((responseJson) => {
         this.setState({
           vehicleList: responseJson,
-          animating:false,
-          dialogVisible:false
+          animating:false
         });
       })
       .catch((error) => {
@@ -162,8 +159,7 @@ export default class AddCarScreen extends React.Component {
         .then((responseJson) => {
           this.setState({
             vehicleList: responseJson  ,
-            animating: false,
-            dialogVisible:false
+            animating: false
            
           });
         })
@@ -183,8 +179,7 @@ export default class AddCarScreen extends React.Component {
       .then((responseJson) => {
         this.setState({
           vehicleList: responseJson,
-          animating:false,
-          dialogVisible:false
+          animating:false
         });
       })
       .catch((error) => {
@@ -192,10 +187,36 @@ export default class AddCarScreen extends React.Component {
     }
   }
   onPressSave(element) {
-    this.setState({ dialogVisible: true,buttonType:"save",vehicleID:element.VehicleID });
+    this.setState({buttonType:"save",vehicleID:element.VehicleID });
+    Alert.alert(
+      'Onay Ekranı',
+      'Arabayı alma/bırakma işlemini yapmak istediğinize emin misiniz?',
+      [
+        {
+          text: 'Hayır',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Evet', onPress: () => this.SaveOrDrop()},
+      ],
+      {cancelable: false},
+    );
   }
   onPressDrop(element) {
-    this.setState({dialogVisible: true,buttonType:"drop",vehicleID:element.VehicleID});
+    this.setState({buttonType:"drop",vehicleID:element.VehicleID});
+    Alert.alert(
+      'Onay Ekranı',
+      'Arabayı alma/bırakma işlemini yapmak istediğinize emin misiniz?',
+      [
+        {
+          text: 'Hayır',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Evet', onPress: () => this.SaveOrDrop()},
+      ],
+      {cancelable: false},
+    );
   }
   render() {  
     if(this.state.animating){
@@ -210,20 +231,7 @@ export default class AddCarScreen extends React.Component {
     return (
       
    <ScrollView style={styles.container}> 
-   <ConfirmDialog
-    title="Onay Ekranı"
-    message="Araba ile ilgili alma/bırakma işlemi yapmak istediğinize emin misiniz?"
-    visible={this.state.dialogVisible}
-    onTouchOutside={() => this.setState({dialogVisible: false})}
-    positiveButton={{
-        title: "EVET",
-        onPress: () => this.SaveOrDrop()
-    }}
-    negativeButton={{
-        title: "HAYIR",
-        onPress: () => this.setState({dialogVisible: false})
-    }}
-/>
+ 
       { this.state.vehicleList.map(element => {
         if(element.EnabledFlag=="1"){
           return  <Card key={element.VehicleID+'car'}> 
